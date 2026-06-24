@@ -242,8 +242,10 @@ class BookingRequestController extends Controller
         $requestDateString = $bookingRequest->requestDate->format('Y-m-d');
 
         try {
-            $startDateTime = Carbon::createFromFormat('Y-m-d H:i:s', $requestDateString . ' ' . $bookingRequest->startTime);
-            $endDateTime = Carbon::createFromFormat('Y-m-d H:i:s', $requestDateString . ' ' . $bookingRequest->endTime);
+            // TIME columns may be returned as either HH:mm or HH:mm:ss depending
+            // on the database driver. Carbon::parse supports both representations.
+            $startDateTime = Carbon::parse($requestDateString . ' ' . $bookingRequest->startTime);
+            $endDateTime = Carbon::parse($requestDateString . ' ' . $bookingRequest->endTime);
         } catch (\Exception $e) {
             Log::error('Error parsing datetime in approve method', [
                 'requestDate' => $requestDateString,

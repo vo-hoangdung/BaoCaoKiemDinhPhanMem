@@ -49,7 +49,7 @@ Tìm kiếm & Tương tác bất đồng bộ: AJAX (JQuery) Sử dụng AJAX gi
 ![Algorithm Diagram](img/activity.jpg)
 
 📌 Project Repository
-🔗 [View full source code on GitHub](https://github.com/dohuungoc1805/classroom-management)
+🔗 [View full source code on GitHub](https://github.com/vo-hoangdung/BaoCaoKiemDinhPhanMem)
 
 ## 🔐 Sample Accounts
 
@@ -57,6 +57,37 @@ Tìm kiếm & Tương tác bất đồng bộ: AJAX (JQuery) Sử dụng AJAX gi
 
 - 📧 Username: `admin`  
 - 🔑 Password: `password`
+
+## 🧪 Kiểm thử và đảm bảo chất lượng
+
+Repository bao gồm bộ kiểm thử hoàn chỉnh phục vụ báo cáo giữa kỳ:
+
+- 50 PHPUnit unit/feature tests với 117 assertions.
+- Selenium WebDriver + JUnit 5 cho các luồng giao diện.
+- Apache JMeter cho HTTP test và tải đồng thời nhẹ.
+- GitHub Actions tự động chạy test sau mỗi lần push/pull request.
+- Test plan, test cases, báo cáo và ảnh bằng chứng.
+
+Tài liệu chi tiết:
+
+- [Hướng dẫn và ma trận kiểm thử](TESTING.md)
+- [Test Plan](docs/TEST-PLAN.md)
+- [Test Cases](docs/TEST-CASES.md)
+- [Báo cáo giữa kỳ DOCX](docs/Bao-cao-giua-ky-Classroom-Management.docx)
+- [Selenium Test Report](selenium-junit-tests/TEST-REPORT.md)
+- [JMeter Test Plan](jmeter/classroom-management-test-plan.jmx)
+
+Chạy PHPUnit:
+
+```powershell
+php artisan test
+```
+
+Chạy Selenium/JUnit:
+
+```powershell
+..\tools\apache-maven-3.9.16\bin\mvn.cmd -f selenium-junit-tests\pom.xml test
+```
 
 ### 👤 User
 
@@ -179,4 +210,3 @@ class Room extends Model
     </div>
 </div>
 ```
-
