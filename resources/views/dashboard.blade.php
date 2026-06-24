@@ -16,14 +16,6 @@
     </div>
     @endif
 
-    @if($errors->any())
-    <div class="alert alert-error">
-        @foreach($errors->all() as $error)
-        <div>{{ $error }}</div>
-        @endforeach
-    </div>
-    @endif
-
     <div class="header">
         <h1>🏫 Hệ thống Quản lý Lớp học</h1>
         <div class="user-info">
