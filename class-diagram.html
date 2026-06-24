@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sơ đồ lớp UML - Dự án Quản lý Lớp học</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f9f9f9;
+        }
+        .container {
+            max-width: 100%;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+        }
+        .mermaid {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+        }
+        .export-btn {
+            display: block;
+            margin: 20px auto;
+            padding: 10px 20px;
+            background-color: #007cba;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .export-btn:hover {
+            background-color: #005a8b;
+        }
+        .instructions {
+            background: #e7f3ff;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            border-left: 4px solid #007cba;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Sơ đồ lớp UML - Dự án Quản lý Lớp học</h1>
+        
+        <div class="instructions">
+            <strong>Cách xuất ảnh:</strong>
+            <ol>
+                <li>Nhấn chuột phải vào sơ đồ bên dưới</li>
+                <li>Chọn "Save image as..." hoặc "Lưu hình ảnh dưới dạng..."</li>
+                <li>Chọn định dạng PNG hoặc SVG</li>
+                <li>Đặt tên file và lưu</li>
+            </ol>
+            <p><em>Hoặc sử dụng phím tắt: Ctrl+S sau khi click vào sơ đồ</em></p>
+        </div>
+
+        <div class="mermaid">
+classDiagram
+    %% Model Classes
+    class User {
+        +id: int
+        +username: string
+        +fullName: string
+        +email: string
+        +password: string
+        +role: string
+        +email_verified_at: datetime
+        +created_at: datetime
+        +updated_at: datetime
+        +isAdmin(): bool
+        +schedules(): HasMany
+        +courses(): HasMany
+        +bookingRequests(): HasMany
+    }
+
+    class Room {
+        +id: int
+        +name: string
+        +capacity: int
+        +location: string
+        +equipment: string
+        +created_at: datetime
+        +updated_at: datetime
+        +schedules(): HasMany
+        +bookingRequests(): HasMany
+    }
+
+    class Course {
+        +id: int
+        +name: string
+        +code: string
+        +description: string
+        +credits: int
+        +instructorId: int
+        +created_at: datetime
+        +updated_at: datetime
+        +instructor(): BelongsTo
+        +bookingRequests(): HasMany
+    }
+
+    class Schedule {
+        +id: int
+        +roomId: int
+        +userId: int
+        +startTime: datetime
+        +endTime: datetime
+        +purpose: string
+        +created_at: datetime
+        +updated_at: datetime
+        +room(): BelongsTo
+        +user(): BelongsTo
+    }
+
+    class BookingRequest {
+        +id: int
+        +userId: int
+        +roomId: int
+        +courseId: int
+        +requestDate: date
+        +startTime: string
+        +endTime: string
+        +purpose: string
+        +status: string
+        +created_at: datetime
+        +updated_at: datetime
+        +user(): BelongsTo
+        +room(): BelongsTo
+        +course(): BelongsTo
+    }
+
+    %% Controller Classes
+    class BookingRequestController {
+        +__construct()
+        +index(): View
+        +store(Request): RedirectResponse
+        +update(Request, BookingRequest): RedirectResponse
+        +approve(BookingRequest): RedirectResponse
+        +reject(BookingRequest): RedirectResponse
+        +destroy(BookingRequest): RedirectResponse
+    }
+
+    class UserController {
+        +index(): View
+        +store(Request): RedirectResponse
+        +update(Request, User): RedirectResponse
+        +destroy(User): RedirectResponse
+    }
+
+    class RoomController {
+        +index(): View
+        +store(Request): RedirectResponse
+        +update(Request, Room): RedirectResponse
+        +destroy(Room): RedirectResponse
+    }
+
+    class CourseController {
+        +index(): View
+        +store(Request): RedirectResponse
+        +update(Request, Course): RedirectResponse
+        +destroy(Course): RedirectResponse
+    }
+
+    class LoginController {
+        +showLoginForm(): View
+        +login(Request): RedirectResponse
+        +logout(): RedirectResponse
+    }
+
+    %% Middleware Classes
+    class AdminMiddleware {
+        +handle(Request, Closure): Response
+    }
+
+    %% Relationships - Model to Model
+    User ||--o{ Schedule : "creates (1:N)"
+    User ||--o{ Course : "instructs (1:N)"
+    User ||--o{ BookingRequest : "makes (1:N)"
+    
+    Room ||--o{ Schedule : "hosts (1:N)"
+    Room ||--o{ BookingRequest : "requested for (1:N)"
+    
+    Course ||--o{ BookingRequest : "used in (1:N)"
+    Course }o--|| User : "taught by (N:1)"
+    
+    Schedule }o--|| Room : "in (N:1)"
+    Schedule }o--|| User : "created by (N:1)"
+    
+    BookingRequest }o--|| User : "made by (N:1)"
+    BookingRequest }o--|| Room : "for (N:1)"
+    BookingRequest }o--|| Course : "involves (N:1)"
+
+    %% Controller Dependencies
+    BookingRequestController ..> BookingRequest : uses
+    BookingRequestController ..> Room : uses
+    BookingRequestController ..> User : uses
+    BookingRequestController ..> Course : uses
+    BookingRequestController ..> Schedule : uses
+    
+    UserController ..> User : uses
+    RoomController ..> Room : uses
+    CourseController ..> Course : uses
+    CourseController ..> User : uses
+    
+    LoginController ..> User : authenticates
+
+    %% Middleware Dependencies
+    AdminMiddleware ..> User : checks role
+
+    %% Laravel Framework Classes
+    class Model {
+        <<abstract>>
+        +fillable: array
+        +casts(): array
+        +create(): Model
+        +update(): bool
+        +delete(): bool
+    }
+
+    class Authenticatable {
+        <<abstract>>
+        +username: string
+        +password: string
+        +remember_token: string
+    }
+
+    class Controller {
+        <<abstract>>
+        +middleware(): void
+    }
+
+    %% Inheritance
+    User --|> Authenticatable
+    Authenticatable --|> Model
+    Room --|> Model
+    Course --|> Model
+    Schedule --|> Model
+    BookingRequest --|> Model
+
+    BookingRequestController --|> Controller
+    UserController --|> Controller
+    RoomController --|> Controller
+    CourseController --|> Controller
+    LoginController --|> Controller
+
+    %% Notes
+    note for User "Role: 'admin' or 'user'\nAdmin can manage all data\nUser can only manage own data"
+    note for BookingRequest "Status: 'pending', 'approved', 'rejected'\nWhen approved, creates Schedule"
+    note for Schedule "Created from approved BookingRequest\nor manually by admin"
+        </div>
+
+        <button class="export-btn" onclick="exportDiagram()">📸 Hướng dẫn xuất ảnh</button>
+    </div>
+
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'default',
+            themeVariables: {
+                fontSize: '12px',
+                fontFamily: 'Arial, sans-serif'
+            }
+        });
+
+        function exportDiagram() {
+            alert('💡 Cách xuất ảnh:\n\n1. Nhấn chuột phải vào sơ đồ\n2. Chọn "Save image as..." hoặc "Lưu hình ảnh"\n3. Chọn định dạng PNG/SVG\n4. Đặt tên và lưu file\n\n🖼️ Sơ đồ sẽ được lưu với chất lượng cao!');
+        }
+    </script>
+</body>
+</html>
