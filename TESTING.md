@@ -27,13 +27,6 @@ tests/
 │   └── UserManagementTest.php
 ├── Unit/
 │   └── ModelRelationshipTest.php
-├── whitebox_tests/
-│   ├── AuthenticationWhiteboxTest.php
-│   ├── RoomWhiteboxTest.php
-│   ├── CourseWhiteboxTest.php
-│   ├── ScheduleWhiteboxTest.php
-│   ├── BookingRequestWhiteboxTest.php
-│   └── UserWhiteboxTest.php
 └── Support/
     └── CreatesClassroomData.php
 
@@ -59,19 +52,7 @@ php artisan test
 Kết quả xác nhận ngày 24/06/2026:
 
 ```text
-Tests: 74 passed (236 assertions)
-```
-
-Chạy riêng white-box tests:
-
-```powershell
-php artisan test --testsuite=Whitebox
-```
-
-Kết quả white-box:
-
-```text
-Tests: 24 passed (119 assertions)
+Tests: 50 passed (117 assertions)
 ```
 
 ### Ma trận bao phủ

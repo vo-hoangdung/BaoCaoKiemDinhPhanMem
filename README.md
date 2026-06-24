@@ -62,7 +62,7 @@ Tìm kiếm & Tương tác bất đồng bộ: AJAX (JQuery) Sử dụng AJAX gi
 
 Repository bao gồm bộ kiểm thử hoàn chỉnh phục vụ báo cáo giữa kỳ:
 
-- 74 PHPUnit unit/feature/white-box tests với 236 assertions.
+- 50 PHPUnit unit/feature tests với 117 assertions.
 - Selenium WebDriver + JUnit 5 cho các luồng giao diện.
 - Apache JMeter cho HTTP test và tải đồng thời nhẹ.
 - GitHub Actions tự động chạy test sau mỗi lần push/pull request.
@@ -81,12 +81,6 @@ Chạy PHPUnit:
 
 ```powershell
 php artisan test
-```
-
-Chạy riêng bộ white-box tests giống cấu trúc bài mẫu:
-
-```powershell
-php artisan test --testsuite=Whitebox
 ```
 
 Chạy Selenium/JUnit:
