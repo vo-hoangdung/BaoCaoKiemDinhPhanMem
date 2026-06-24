@@ -242,8 +242,10 @@ class BookingRequestController extends Controller
         $requestDateString = $bookingRequest->requestDate->format('Y-m-d');
 
         try {
-            $startDateTime = Carbon::createFromFormat('Y-m-d H:i:s', $requestDateString . ' ' . $bookingRequest->startTime);
-            $endDateTime = Carbon::createFromFormat('Y-m-d H:i:s', $requestDateString . ' ' . $bookingRequest->endTime);
+            $startTimeString = strlen($bookingRequest->startTime) === 5 ? $bookingRequest->startTime . ':00' : $bookingRequest->startTime;
+            $endTimeString = strlen($bookingRequest->endTime) === 5 ? $bookingRequest->endTime . ':00' : $bookingRequest->endTime;
+            $startDateTime = Carbon::createFromFormat('Y-m-d H:i:s', $requestDateString . ' ' . $startTimeString);
+            $endDateTime = Carbon::createFromFormat('Y-m-d H:i:s', $requestDateString . ' ' . $endTimeString);
         } catch (\Exception $e) {
             Log::error('Error parsing datetime in approve method', [
                 'requestDate' => $requestDateString,

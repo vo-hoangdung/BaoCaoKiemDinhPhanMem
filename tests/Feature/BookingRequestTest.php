@@ -198,9 +198,8 @@ class BookingRequestTest extends TestCase
         $room = $this->makeRoom();
         $course = $this->makeCourse($teacher);
         $bookingRequest = $this->makeBookingRequest($user, $room, $course);
-
         $response = $this->actingAs($admin)->post(route('requests.approve', $bookingRequest));
-
+ 
         $response->assertRedirect(route('dashboard'));
         $response->assertSessionHas('success');
 

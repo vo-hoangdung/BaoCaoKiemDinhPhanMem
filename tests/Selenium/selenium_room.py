@@ -41,12 +41,6 @@ class RoomSeleniumTest(unittest.TestCase):
         self.driver.find_element(By.XPATH, "//button[contains(., 'Đăng nhập') or @type='submit']").click()
         self.wait.until(EC.url_contains("/dashboard"))
 
-    def click_button_contains(self, text):
-        button = self.wait.until(
-            EC.element_to_be_clickable((By.XPATH, f"//*[self::button or self::a][contains(normalize-space(), '{text}')]") )
-        )
-        self.driver.execute_script("arguments[0].click();", button)
-
     def fill_input(self, name, value):
         element = self.wait.until(EC.presence_of_element_located((By.NAME, name)))
         element.clear()
@@ -57,23 +51,34 @@ class RoomSeleniumTest(unittest.TestCase):
 
         room_name = f"Phòng Selenium {int(time.time())}"
 
-        self.click_button_contains("Thêm phòng")
+        # Mở modal "Thêm phòng học" bằng JavaScript (vì button dùng onclick)
+        self.driver.execute_script("showModal('addRoomModal')")
+
+        # Chờ modal hiển thị
+        self.wait.until(EC.visibility_of_element_located((By.ID, "addRoomModal")))
+
         self.fill_input("name", room_name)
         self.fill_input("capacity", "45")
         self.fill_input("location", "Tầng Selenium")
 
-        # equipment có thể là textarea; nếu không có thì bỏ qua để test vẫn chạy.
         try:
             self.fill_input("equipment", "Máy chiếu, bảng")
         except Exception:
             pass
 
+        # Submit form bên trong modal
         submit_button = self.wait.until(
-            EC.element_to_be_clickable((By.XPATH, "//button[contains(., 'Thêm phòng') or @type='submit']"))
+            EC.element_to_be_clickable(
+                (By.XPATH, "//div[@id='addRoomModal']//button[@type='submit']")
+            )
         )
         self.driver.execute_script("arguments[0].click();", submit_button)
 
+        # Sau submit, Laravel redirect về /dashboard — chờ trang load
+        self.wait.until(EC.url_contains("/dashboard"))
         self.wait.until(EC.presence_of_element_located((By.TAG_NAME, "body")))
+
+        # Tên phòng mới phải xuất hiện trong bảng danh sách phòng
         self.assertIn(room_name, self.driver.page_source)
 
 
