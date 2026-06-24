@@ -185,6 +185,51 @@
             text-decoration: underline;
         }
 
+        .register-link {
+            text-align: center;
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid #e9ecef;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .register-link a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+
+        .register-link a:hover {
+            color: #764ba2;
+            text-decoration: underline;
+        }
+
+        .btn-register-outline {
+            display: block;
+            width: 100%;
+            padding: 13px;
+            background: transparent;
+            color: #667eea;
+            border: 2px solid #667eea;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            text-decoration: none;
+            margin-bottom: 20px;
+        }
+
+        .btn-register-outline:hover {
+            background: #667eea;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.2);
+        }
+
         @media (max-width: 480px) {
             .login-container {
                 padding: 30px 20px;
@@ -212,6 +257,12 @@
             @endforeach
         </div>
         @endif
+
+        @if (session('success'))
+<div style="background: #d4edda; color: #155724; padding: 12px 16px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #c3e6cb; font-size: 14px;">
+    ✅ {{ session('success') }}
+</div>
+@endif
 
         <form method="POST" action="{{ route('login') }}">
             @csrf
@@ -241,15 +292,12 @@
             </button>
         </form>
 
-        <div class="demo-accounts">
-            <h4>📋 Tài khoản demo để test</h4>
-      
-            <div class="account-item">
-                <div class="account-info">
-                    <span class="account-role">👨‍🏫 Giáo viên</span>
-                </div>
-                <div class="account-credentials">giaovien1 / password</div>
-            </div>
+        <a href="{{ route('register') }}" class="btn-register-outline">
+            📝 Đăng ký tài khoản mới
+        </a>
+
+        <div class="register-link">
+            Chưa có tài khoản? <a href="{{ route('register') }}">Đăng ký ngay</a>
         </div>
 
         <div class="back-home">
