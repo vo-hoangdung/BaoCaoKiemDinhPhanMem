@@ -1,114 +1,273 @@
-# Classroom Management System Testing Documentation
+Tài liệu này mô tả toàn bộ hệ thống kiểm thử của **Classroom Management System**, bao gồm:
 
-## Tổng quan
-
-Tài liệu này mô tả hệ thống kiểm thử cho web app **Quản lý phòng học / Classroom Management System** được xây dựng bằng Laravel, bao gồm:
-
-- White-box Testing sử dụng PHPUnit / Laravel Feature Test (Đã sửa & Đạt 100%)
-- Automated UI Testing sử dụng Selenium WebDriver (Đã sửa & Đạt 100%)
-- Hướng dẫn cấu hình môi trường kiểm thử
-- Danh sách chức năng đã được kiểm thử
-- Các lỗi kỹ thuật đã được khắc phục để chạy test thành công
+* White-box Testing sử dụng PHPUnit / Laravel Feature Test
+* Automated UI Testing sử dụng Selenium WebDriver
+* Hướng dẫn cấu hình môi trường kiểm thử
+* Danh sách chức năng đã được kiểm thử
+* Các hạn chế và chức năng chưa thể tự động hóa
 
 ---
 
-# Cấu trúc thư mục
-
 ```text
 tests/
-├── TestCase.php              <-- File cơ sở cho Laravel Feature test (đã được bổ sung)
+├── TestCase.php
 ├── Feature/
 │   ├── AuthTest.php
 │   ├── RoomManagementTest.php
 │   ├── CourseManagementTest.php
 │   └── BookingRequestTest.php
 │
-└── Selenium/
-    ├── run_all_tests.py      <-- Script chạy toàn bộ test Selenium tự động
-    ├── selenium_login.py
-    ├── selenium_room.py
-    ├── selenium_course.py    <-- File test giao diện Thêm môn học (đã được viết mới)
-    └── selenium_booking_request.py
+├── Selenium/
+│   ├── run_all_tests.py
+│   ├── selenium_login.py
+│   ├── selenium_room.py
+│   ├── selenium_course.py
+│   └── selenium_booking_request.py
+│ 
+└── README.md
 ```
 
 ---
 
-# 1. White-box Testing (PHPUnit)
+Bộ kiểm thử White-box được xây dựng bằng PHPUnit nhằm đánh giá tính đúng đắn của:
 
-## Mục tiêu
+* Models
+* Controllers
+* Business Logic
+* Validation Rules
+* Permission Control
 
-Bộ kiểm thử Feature Test được xây dựng bằng **PHPUnit tích hợp trong Laravel** nhằm đánh giá tính đúng đắn của logic backend, Routes, Controllers, Validation Rules, Phân quyền người dùng và Database.
-
-### Các module đã chạy kiểm thử thành công:
-- **`AuthTest.php`**: Xác thực đăng nhập thành công/thất bại, đăng xuất và kiểm tra phân quyền truy cập.
-- **`RoomManagementTest.php`**: Admin tạo, sửa, xóa phòng học; kiểm tra quy tắc trùng tên, sức chứa và kiểm tra phân quyền user thường.
-- **`CourseManagementTest.php`**: Quản lý môn học, số lượng tín chỉ, ràng buộc trùng mã môn và gán giảng viên.
-- **`BookingRequestTest.php`**: Tạo yêu cầu đặt phòng, ngăn chặn trùng lịch đặt học, Admin duyệt/từ chối yêu cầu và tự tạo Lịch học (Schedules) tương ứng.
-
-## Hướng dẫn chạy Feature Tests
-
-1. **Chuẩn bị môi trường**:
-   ```bash
-   composer install
-   cp .env.example .env
-   php artisan key:generate
-   ```
-2. **Chạy toàn bộ Feature test**:
-   ```bash
-   php artisan test
-   # Hoặc dùng PHPUnit trực tiếp:
-   vendor/bin/phpunit
-   ```
+| Tiêu chí           | Mô tả                                                |
+| ------------------ | ---------------------------------------------------- |
+| Statement Coverage | Mỗi câu lệnh được thực thi ít nhất một lần           |
+| Branch Coverage    | Mọi nhánh điều kiện được kiểm tra                    |
+| Condition Coverage | Mọi biểu thức Boolean được đánh giá cả True và False |
 
 ---
 
-# 2. Automated UI Testing (Selenium)
+Kiểm thử các chức năng xác thực người dùng:
 
-## Mục tiêu
+* login_view
+* logout_view
+* user_login_view
 
-Kiểm thử giao diện thực tế của người dùng trên trình duyệt Google Chrome mô phỏng hành vi thật (nhập form, click nút, mở modal javascript và kiểm tra kết quả hiển thị).
+* Đăng nhập thành công
+* Sai mật khẩu
+* Thiếu thông tin đăng nhập
+* Đăng xuất thành công
+* Bảo vệ đường dẫn (Chưa đăng nhập không truy cập được dashboard)
 
-### Các file test UI đã chạy thành công:
-- **`selenium_login.py`**: Test giao diện đăng nhập thành công, thất bại và đăng xuất.
-- **`selenium_room.py`**: Test luồng Admin thêm phòng học qua Modal UI và chuyển hướng.
-- **`selenium_course.py`** *(Mới)*: Test luồng Admin thêm môn học mới qua Modal UI của tab Môn học.
-- **`selenium_booking_request.py`**: Test Giáo viên chọn phòng, môn học để tạo yêu cầu đặt phòng, kiểm tra thông báo flash và hiển thị trạng thái chờ duyệt.
+---
 
-## Hướng dẫn chạy Selenium Tests
+Kiểm thử chức năng quản lý phòng học.
 
-### Yêu cầu cài đặt thư viện:
+* Tạo phòng học
+* Cập nhật thông tin phòng học
+* Xóa phòng học
+* Phân quyền quản trị viên (Admin được chỉnh sửa, User thường không có quyền)
+* Ràng buộc trùng tên phòng
+* Ràng buộc sức chứa hợp lệ
+
+---
+
+Kiểm thử quản lý môn học.
+
+* Tạo môn học
+* Cập nhật thông tin môn học
+* Xóa môn học
+* Phân quyền quản trị viên (Admin được chỉnh sửa, User thường không có quyền)
+* Kiểm tra mã môn học duy nhất
+* Ràng buộc số lượng tín chỉ hợp lệ
+
+---
+
+Kiểm thử nghiệp vụ đặt phòng học.
+
+* Tạo yêu cầu đặt phòng
+* Phân quyền phê duyệt yêu cầu đặt phòng (Chỉ Admin được duyệt)
+* Phê duyệt yêu cầu và tự động sinh Lịch học (Schedules) tương ứng
+* Từ chối yêu cầu đặt phòng
+* Ngăn chặn đặt trùng phòng và thời gian (Conflict schedules)
+* Ràng buộc thời gian kết thúc phải sau thời gian bắt đầu
+* Ngăn đặt phòng ở thời điểm quá khứ
+
+---
+
+## Tạo cấu hình SQLite cho môi trường test
+
+Các tham số cấu hình SQLite in-memory đã được định nghĩa trong thẻ `<php>` của file `phpunit.xml`:
+
+```xml
+<php>
+    <env name="APP_ENV" value="testing"/>
+    <env name="DB_CONNECTION" value="sqlite"/>
+    <env name="DB_DATABASE" value=":memory:"/>
+    <env name="CACHE_STORE" value="array"/>
+    <env name="SESSION_DRIVER" value="array"/>
+    <env name="QUEUE_CONNECTION" value="sync"/>
+</php>
+```
+
+## Chạy toàn bộ test
+```bash
+vendor/bin/phpunit
+```
+
+## Chạy từng module
+```bash
+vendor/bin/phpunit tests/Feature/AuthTest.php
+
+vendor/bin/phpunit tests/Feature/RoomManagementTest.php
+
+vendor/bin/phpunit tests/Feature/CourseManagementTest.php
+
+vendor/bin/phpunit tests/Feature/BookingRequestTest.php
+```
+
+---
+
+## Báo cáo Coverage
+Cài đặt Xdebug hoặc PCOV trên máy của bạn, sau đó chạy:
+
+```bash
+php artisan test --coverage
+```
+
+Báo cáo HTML sẽ được tạo bằng lệnh:
+
+```bash
+php artisan test --coverage-html reports/coverage
+```
+
+Báo cáo HTML sẽ được tạo trong thư mục:
+
+```text
+reports/coverage/
+```
+
+---
+
+Kiểm thử giao diện và luồng thao tác thực tế của người dùng trên trình duyệt.
+
+* Selenium WebDriver
+* Google Chrome
+* ChromeDriver
+
+---
+
+## Cài đặt
 ```bash
 pip install selenium
 ```
 
-### Chạy kiểm thử:
-Trước khi chạy, hãy chắc chắn Laravel server đang chạy trên cổng mặc định: `php artisan serve --port=8000`.
-
-* **Cách 1: Chạy tất cả tự động (Headless - chạy ngầm)**:
-  ```bash
-  python tests/Selenium/run_all_tests.py --headless
-  ```
-* **Cách 2: Chạy trực tiếp hiển thị giao diện Chrome (Từng file)**:
-  ```bash
-  python tests/Selenium/run_all_tests.py
-  # Hoặc chạy lẻ từng file:
-  python tests/Selenium/selenium_login.py
-  python tests/Selenium/selenium_room.py
-  python tests/Selenium/selenium_course.py
-  python tests/Selenium/selenium_booking_request.py
-  ```
+Với các phiên bản Selenium mới, driver Chrome sẽ tự động được tải về qua Selenium Manager.
 
 ---
 
-# 3. Các lỗi kỹ thuật đã được khắc phục (Bug Fixes)
+## Chuẩn bị môi trường
+Khởi động server Laravel:
 
-Để bộ test suite chạy thành công 100%, các thay đổi sau đã được áp dụng:
+```bash
+php artisan serve
+```
 
-### Backend & Feature Tests
-1. **Bổ sung file [TestCase.php](file:///C:/Users/ngocd/Downloads/BaoCaoKiemDinhPhanMem_Fixed/tests/TestCase.php)**: Tái tạo lại file class cơ sở của Laravel Test bị thiếu để khắc phục lỗi hệ thống `Class "Tests\TestCase" not found`.
-2. **Sửa định dạng thời gian của Controller**: Trong [BookingRequestController.php](file:///C:/Users/ngocd/Downloads/BaoCaoKiemDinhPhanMem_Fixed/BookingRequestController.php) (hàm `approve`), hàm gốc bắt buộc định dạng giờ phải có giây (`H:i:s`). Đã được cập nhật để tự động điền thêm giây `:00` nếu dữ liệu gửi lên là định dạng 5 ký tự `H:i` (ví dụ `"08:00"`), giúp test case duyệt phòng hoạt động đúng logic.
+Tạo tài khoản thử nghiệm bằng seeder:
 
-### Selenium UI Tests
-1. **Lỗi trùng ID phần tử HTML**: Các modal "Tạo lịch học" và "Tạo yêu cầu đặt phòng" trên dashboard gốc của app đều dùng chung ID HTML (`roomId`, `startTime`, `endTime`, `courseId`). Đã sửa các file test Selenium bằng cách giới hạn tầm vực CSS selector (CSS Scoping) cụ thể vào ID của từng modal tương ứng (ví dụ `#addRequestModal #roomId`) để tránh Selenium điền nhầm thông tin vào modal đang ẩn.
-2. **Cơ chế gọi Modal bằng Javascript**: Ứng dụng Laravel sử dụng mã JS tùy chỉnh `showModal('ModalId')` thay vì button standard. Các file test Selenium đã được cập nhật để gọi trực tiếp lệnh script `self.driver.execute_script("showModal('...')")`.
-3. **Chờ tải lại trang (Page Reload Sync)**: Thay thế việc chờ tĩnh (`time.sleep`) bằng cách đợi trạng thái cũ biến mất `staleness_of` và kiểm tra sự xuất hiện của thông báo flash thành công / thông báo lỗi trên DOM thực tế để tăng tốc độ chạy test.
+```bash
+php artisan db:seed --class=DatabaseDataSeeder
+```
+
+Cập nhật thông tin đăng nhập mẫu trong các file Selenium:
+
+```python
+ADMIN_USERNAME = "admin"
+ADMIN_PASSWORD = "password"
+USER_USERNAME = "giaovien1"
+USER_PASSWORD = "password"
+```
+
+---
+
+### selenium_login.py
+* Đăng nhập thành công với admin
+* Đăng nhập thất bại khi sai mật khẩu
+* Đăng xuất thành công
+
+### selenium_room.py
+* Đăng nhập admin
+* Xem danh sách phòng học
+* Mở modal thêm phòng bằng Javascript
+* Điền thông tin và tạo thành công phòng học mới
+
+### selenium_course.py
+* Đăng nhập admin
+* Chuyển sang tab Môn học
+* Mở modal thêm môn học bằng Javascript
+* Điền thông tin và tạo thành công môn học mới
+
+### selenium_booking_request.py
+* Đăng nhập user (giáo viên)
+* Chuyển sang tab Yêu cầu đặt phòng
+* Tạo yêu cầu đặt phòng mới
+* Kiểm tra thông báo flash và trạng thái chờ duyệt trên giao diện
+
+---
+
+Chạy tất cả kiểm thử Selenium (ở chế độ headless):
+
+```bash
+python tests/Selenium/run_all_tests.py --headless
+```
+
+Chạy tất cả kiểm thử hiển thị giao diện:
+
+```bash
+python tests/Selenium/run_all_tests.py
+```
+
+Chạy lẻ từng kiểm thử:
+
+```bash
+python tests/Selenium/selenium_login.py
+python tests/Selenium/selenium_room.py
+python tests/Selenium/selenium_course.py
+python tests/Selenium/selenium_booking_request.py
+```
+
+---
+
+# Chức năng đã được kiểm thử
+Các nhóm chức năng chính đã được bao phủ:
+
+* Authentication & Authorization
+* Room Management
+* Course Management
+* Booking Request Management
+* Schedule Processing
+* Search & Filtering
+* Permission Control
+
+---
+
+# Các chức năng chưa tự động hóa
+| Chức năng              | Nguyên nhân                       |
+| ---------------------- | --------------------------------- |
+| Xuất lịch học ra file Excel (nếu có) | Cần kiểm tra dữ liệu file sinh ra |
+| Hiển thị lịch trên thời khóa biểu trực quan | Yêu cầu logic render đồ họa phức tạp |
+| Kiểm thử hiệu năng hệ thống đặt lịch đồng thời | Cần thêm công cụ kiểm thử tải chuyên dụng như JMeter |
+
+---
+
+## Database
+Môi trường Production sử dụng MySQL hoặc PostgreSQL.
+
+Môi trường Test sử dụng SQLite In-Memory để:
+
+* Tăng tốc độ thực thi
+* Không ảnh hưởng dữ liệu thật
+* Dễ triển khai CI/CD
+
+## ChromeDriver
+ChromeDriver phải tương thích với phiên bản Google Chrome hiện tại.
+
+Có thể chạy chế độ headless bằng cách thêm tham số `--headless` khi chạy lệnh wrapper `run_all_tests.py`.
